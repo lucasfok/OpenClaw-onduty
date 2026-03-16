@@ -1,0 +1,76 @@
+services:
+  openclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: openclaw-onduty:local
+    container_name: openclaw-onduty-shell
+    init: true
+    tty: true
+    stdin_open: true
+    command: ["bash"]
+
+    volumes:
+      - openclaw_workspace:/workspace
+      - openclaw_codex_home:/home/openclaw/.codex
+
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,nosuid,nodev,size=64m
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+
+    networks: [openclaw_net]
+    environment:
+      HOME: /home/openclaw
+      CODEX_HOME: /home/openclaw/.codex
+      RUNBOOK_PATH: /etc/onduty/runbook.json
+      ROTATION_TEAM_PATH: /etc/onduty/rotation-team.json
+      ROTATION_STATE_PATH: /workspace/rotation/state.json
+
+  onduty-agent:
+    image: openclaw-onduty:local
+    container_name: openclaw-onduty-agent
+    depends_on:
+      - openclaw
+    init: true
+    command: ["/opt/onduty/daily_agent.sh"]
+    restart: unless-stopped
+
+    volumes:
+      - openclaw_workspace:/workspace
+      - openclaw_codex_home:/home/openclaw/.codex
+
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,nosuid,nodev,size=64m
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+
+    networks: [openclaw_net]
+    environment:
+      HOME: /home/openclaw
+      CODEX_HOME: /home/openclaw/.codex
+      RUNBOOK_PATH: /etc/onduty/runbook.json
+      ROTATION_TEAM_PATH: /etc/onduty/rotation-team.json
+      ROTATION_STATE_PATH: /workspace/rotation/state.json
+      REPORTS_DIR: /workspace/reports
+      DAILY_CHECK_UTC_HOUR: "07"
+      DAILY_CHECK_UTC_MINUTE: "00"
+      RUN_IMMEDIATELY: "true"
+
+volumes:
+  openclaw_workspace:
+    driver: local
+  openclaw_codex_home:
+    driver: local
+
+networks:
+  openclaw_net:
+    driver: bridge
