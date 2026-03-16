@@ -1,0 +1,38 @@
+{
+  "name": "onduty-daily-health-checks",
+  "checks": [
+    {
+      "name": "prod-api-health",
+      "environment": "prod",
+      "type": "http",
+      "url": "https://prod.example.com/health",
+      "method": "GET",
+      "expected_status": 200,
+      "timeout_seconds": 10
+    },
+    {
+      "name": "staging-api-health",
+      "environment": "staging",
+      "type": "http",
+      "url": "https://staging.example.com/health",
+      "method": "GET",
+      "expected_status": 200,
+      "timeout_seconds": 10
+    },
+    {
+      "name": "prod-db-port",
+      "environment": "prod",
+      "type": "tcp",
+      "host": "prod-db.internal",
+      "port": 5432,
+      "timeout_seconds": 3
+    },
+    {
+      "name": "onduty-cli-self-check",
+      "environment": "shared",
+      "type": "command",
+      "command": "python3 --version",
+      "expected_exit_code": 0
+    }
+  ]
+}
