@@ -18,6 +18,8 @@ services:
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=256m
       - /run:rw,nosuid,nodev,size=64m
+    healthcheck:
+      disable: true
     cap_drop: ["ALL"]
     security_opt:
       - no-new-privileges:true
@@ -48,6 +50,8 @@ services:
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=256m
       - /run:rw,nosuid,nodev,size=64m
+    healthcheck:
+      disable: true
     cap_drop: ["ALL"]
     security_opt:
       - no-new-privileges:true

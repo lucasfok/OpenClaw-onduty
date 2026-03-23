@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-ARG OPENCLAW_BASE_IMAGE=ghcr.io/openclawai/openclaw:latest
+ARG OPENCLAW_BASE_IMAGE=ghcr.io/openclaw/openclaw:latest
 FROM ${OPENCLAW_BASE_IMAGE}
 
 ENV CODEX_HOME=/home/openclaw/.codex
@@ -20,7 +20,8 @@ COPY --chown=openclaw:openclaw runbook/onduty-checks.json /etc/onduty/runbook.js
 COPY --chown=openclaw:openclaw runbook/rotation-team.json /etc/onduty/rotation-team.json
 COPY --chown=openclaw:openclaw skills /opt/onduty/skills
 
-RUN chmod +x /opt/onduty/runbook_runner.py /opt/onduty/daily_agent.sh /opt/onduty/select_responsible.py /opt/onduty/bootstrap_skills.sh
+RUN sed -i 's/\r$//' /opt/onduty/*.sh /opt/onduty/*.py \
+    && chmod +x /opt/onduty/runbook_runner.py /opt/onduty/daily_agent.sh /opt/onduty/select_responsible.py /opt/onduty/bootstrap_skills.sh
 
 WORKDIR /workspace
 USER openclaw
